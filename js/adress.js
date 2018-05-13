@@ -1,0 +1,49 @@
+new Vue({
+    el:".container",
+    data:{
+       addressList:[],
+        limitNum:3,
+        loadText:"更多",
+        curindex:0,
+        shipping:1
+    },
+    mounted:function(){
+         this.$nextTick(function(){
+            this.addAddress()
+         })
+    },
+    computed:{
+        filterAddress:function(){
+            return this.addressList.slice(0,this.limitNum)
+        }
+    },
+    methods:{
+         addAddress:function(){
+             this.$http.get("data/address.json").then(res=>{
+                 let result=res.data;
+                 if(result.status==0){
+                     this.addressList=result.result;
+                 }
+             })
+         },
+        loadMore:function(){
+             if(this.limitNum==3){
+                 this.limitNum=this.addressList.length
+                 this.loadText="收起"
+             }else{
+                 this.limitNum=3
+                 this.loadText="更多"
+             }
+
+        },
+        setDefault:function(addressid){
+             this.addressList.forEach((item,index)=>{
+                 if(item.addressId==addressid){
+                     item.isDefault=true
+                 }else{
+                     item.isDefault=false
+                 }
+             })
+        }
+    }
+})
